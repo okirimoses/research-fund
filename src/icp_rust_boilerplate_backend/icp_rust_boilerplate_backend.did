@@ -1,0 +1,122 @@
+type CreateMilestonePayload = record {
+  required_funding : nat64;
+  description : text;
+  deadline : text;
+  proposal_id : nat64;
+};
+type CreateProposalPayload = record {
+  title : text;
+  researcher_id : nat64;
+  description : text;
+  funding_target : nat64;
+  methodology : text;
+};
+type FundProposalPayload = record {
+  proposal_id : nat64;
+  funding_amount : nat64;
+};
+type Message = variant {
+  Error : text;
+  InvalidPayload : text;
+  NotFound : text;
+  Success : text;
+};
+type Milestone = record {
+  id : nat64;
+  status : text;
+  required_funding : nat64;
+  description : text;
+  deadline : text;
+  proofs : vec nat64;
+};
+type ProofOfReproduction = record {
+  id : nat64;
+  status : text;
+  methodology_hash : text;
+  results_hash : text;
+};
+type ResearchProposal = record {
+  id : nat64;
+  title : text;
+  reviews : vec nat64;
+  current_funding : nat64;
+  researcher_id : nat64;
+  description : text;
+  stage : text;
+  funding_target : nat64;
+  methodology : text;
+  milestones : vec nat64;
+  timeline : text;
+};
+type Researcher = record {
+  id : nat64;
+  contributions : vec text;
+  owner : text;
+  total_points : nat64;
+  name : text;
+  badges : vec text;
+  email : text;
+  achievements : vec text;
+  address : text;
+  phone : text;
+  reputation_score : nat64;
+};
+type ResearcherPayload = record {
+  owner : text;
+  name : text;
+  email : text;
+  address : text;
+  phone : text;
+};
+type Result = variant { Ok : Milestone; Err : Message };
+type Result_1 = variant { Ok : ResearchProposal; Err : Message };
+type Result_2 = variant { Ok : Researcher; Err : Message };
+type Result_3 = variant { Ok : vec ResearchProposal; Err : Message };
+type Result_4 = variant { Ok : vec Researcher; Err : Message };
+type Result_5 = variant { Ok : ProofOfReproduction; Err : Message };
+type Result_6 = variant { Ok : Review; Err : Message };
+type Result_7 = variant { Ok : vec Review; Err : Message };
+type Review = record {
+  id : nat64;
+  verified : bool;
+  score : nat64;
+  proposal_id : nat64;
+  comments : text;
+  reviewer : text;
+  stake_amount : nat64;
+};
+type SubmitProofPayload = record {
+  methodology_hash : text;
+  milestone_id : nat64;
+  results_hash : text;
+};
+type SubmitReviewPayload = record {
+  score : nat64;
+  proposal_id : nat64;
+  comments : text;
+  reviewer : text;
+  stake_amount : nat64;
+};
+type VerifyMilestonePayload = record {
+  proposal_id : nat64;
+  milestone_id : nat64;
+};
+service : {
+  create_milestone : (CreateMilestonePayload) -> (Result);
+  create_proposal : (CreateProposalPayload) -> (Result_1);
+  create_researcher : (ResearcherPayload) -> (Result_2);
+  fund_proposal : (FundProposalPayload) -> (Result_1);
+  get_all_proposals : () -> (Result_3) query;
+  get_all_researchers : () -> (Result_4) query;
+  get_milestone_by_id : (nat64) -> (Result) query;
+  get_proof_by_id : (nat64) -> (Result_5) query;
+  get_proposal_by_id : (nat64) -> (Result_1) query;
+  get_proposals_by_researcher_id : (nat64) -> (Result_3) query;
+  get_researcher_by_id : (nat64) -> (Result_2) query;
+  get_researcher_by_owner : () -> (Result_2) query;
+  get_review_by_id : (nat64) -> (Result_6) query;
+  get_reviews_by_proposal_id : (nat64) -> (Result_7) query;
+  submit_proof : (SubmitProofPayload) -> (Result_5);
+  submit_review : (SubmitReviewPayload) -> (Result_6);
+  verify_milestone : (VerifyMilestonePayload) -> (Result);
+}
